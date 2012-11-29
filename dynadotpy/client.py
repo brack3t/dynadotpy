@@ -26,7 +26,14 @@ DELETE_RESPONSES = {
     "grace_expired": "The grace period has already expired",
     "too_soon": "Cannot delete a domain the first hour after registration",
     "offline": "The central registry for this domain is currently offline",
-    "error": "There was a syntax or registry error processing this request",
+    "error": "There was a syntax or registry error processing this request"
+}
+
+RENEW_RESPONSES = {
+    "success": "The domain was successfully renewed",
+    "insufficient_funds": "Not enough account balance to process this renewal",
+    "offline": "The central registry for this domain is currently offline",
+    "error": "There was a syntax or registry error processing this request"
 }
 
 
@@ -92,7 +99,26 @@ class Dynadot(object):
         if "error" in response:
             return self._error_response(response)
 
-        return self._parse_register_results(response[0].split(","))
+        return self._parse_register_renew_results(response[0].split(","))
+
+    def renew(self, domain, duration):
+        """
+        Renew a domain.
+        """
+        payload = self.payload.copy()
+        payload.update({
+            "command": "renew",
+            "domain": domain,
+            "duration": duration
+        })
+
+        req = requests.get(self.API_URL, params=payload)
+        response = self._check_response_status(req.text)
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_register_renew_results(response[0].split(","))
 
     def _parse_delete_results(self, result):
         """
@@ -103,7 +129,7 @@ class Dynadot(object):
             "more_info": result[1]
         }
 
-    def _parse_register_results(self, result):
+    def _parse_register_renew_results(self, result):
         """
         Parse registration result.
         """
