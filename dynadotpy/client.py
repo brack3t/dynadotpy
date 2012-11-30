@@ -53,9 +53,7 @@ class Dynadot(object):
         self.payload = {"key": self.API_KEY}
 
     def delete(self, domain):
-        """
-        Delete a domain.
-        """
+        """Delete a domain."""
         payload = self.payload.copy()
         payload.update({
             "command": "delete",
@@ -71,9 +69,7 @@ class Dynadot(object):
         return self._parse_delete_results(response[0].split(","))
 
     def get_nameservers(self, domain):
-        """
-        Get Nameservers for domain.
-        """
+        """Get Nameservers for domain."""
         payload = self.payload.copy()
         payload.update({
             "command": "get_ns",
@@ -89,9 +85,7 @@ class Dynadot(object):
         return self._parse_get_nameservers_results(response[0].split(","))
 
     def search(self, domains):
-        """
-        Search for available domains.
-        """
+        """Search for available domains."""
         payload = self.payload.copy()
         payload.update({"command": "search"})
 
@@ -108,9 +102,7 @@ class Dynadot(object):
         return self._parse_search_results(results=response)
 
     def register(self, domain, duration):
-        """
-        Register a domain.
-        """
+        """Register a domain."""
         payload = self.payload.copy()
         payload.update({
             "command": "register",
@@ -127,9 +119,7 @@ class Dynadot(object):
         return self._parse_register_renew_results(response[0].split(","))
 
     def renew(self, domain, duration):
-        """
-        Renew a domain.
-        """
+        """Renew a domain."""
         payload = self.payload.copy()
         payload.update({
             "command": "renew",
@@ -146,9 +136,7 @@ class Dynadot(object):
         return self._parse_register_renew_results(response[0].split(","))
 
     def set_renew_option(self, domain, option):
-        """
-        Set domain renewal options.
-        """
+        """Set domain renewal options."""
         if option not in self.RENEW_OPTIONS:
             raise Exception("Invalid renewal option. Options are: [%s]" % (
                 ", ".join(self.RENEW_OPTIONS)))
@@ -169,18 +157,14 @@ class Dynadot(object):
         return self._parse_set_renew_option_results(response[0].split(","))
 
     def _parse_delete_results(self, result):
-        """
-        Parse delete result.
-        """
+        """Parse delete result."""
         return {
             "result": result[0],
             "more_info": result[1]
         }
 
     def _parse_get_nameservers_results(self, result):
-        """
-        Parse nameserver result.
-        """
+        """Parse nameserver result."""
         response = {"result": result[0], "more_info": result[14]}
         for n in xrange(0, 13):
             response.update({"ns%d" % n: result[n + 1]})
@@ -188,9 +172,7 @@ class Dynadot(object):
         return response
 
     def _parse_register_renew_results(self, result):
-        """
-        Parse registration result.
-        """
+        """Parse registration result."""
         return {
             "result": result[0],
             "more_info": result[1],
@@ -198,36 +180,30 @@ class Dynadot(object):
         }
 
     def _parse_search_results(self, results):
-        """
-        Parse search results.
-        """
-        loggins = []
+        """Parse search results."""
+        search_results = []
 
         for result in results:
             result = result.split(",")
             if result:
-                loggins.append({
+                search_results.append({
                     "domain_param": result[0],
                     "domain": result[1],
                     "language": result[2],
                     "result": result[3],
                     "info": result[4]
                 })
-        return loggins
+        return search_results
 
     def _parse_set_renew_option_results(self, result):
-        """
-        Parse set renew option result.
-        """
+        """Parse set renew option result."""
         return {
             "result": result[0],
             "more_info": result[1]
         }
 
     def _check_response_status(self, response):
-        """
-        Check response for errors.
-        """
+        """Check response for errors."""
         response_list = response.split("\n")
         status = response_list[0].split(",")
 
@@ -237,7 +213,5 @@ class Dynadot(object):
         return response_list[2:-1]
 
     def _error_response(self, response):
-        """
-        Return error responses.
-        """
+        """Return error responses."""
         return {response[0]: response[1]}
