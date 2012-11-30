@@ -54,14 +54,7 @@ class Dynadot(object):
 
     def delete(self, domain):
         """Delete a domain."""
-        payload = self.payload.copy()
-        payload.update({
-            "command": "delete",
-            "domain": domain
-        })
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="delete", domain=domain)
 
         if "error" in response:
             return self._error_response(response)
@@ -70,14 +63,7 @@ class Dynadot(object):
 
     def get_nameservers(self, domain):
         """Get Nameservers for domain."""
-        payload = self.payload.copy()
-        payload.update({
-            "command": "get_ns",
-            "domain": domain
-        })
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="get_ns", domain=domain)
 
         if "error" in response:
             return self._error_response(response)
@@ -86,15 +72,11 @@ class Dynadot(object):
 
     def search(self, domains):
         """Search for available domains."""
-        payload = self.payload.copy()
-        payload.update({"command": "search"})
+        if not isinstance(domains, list):
+            raise TypeError("Search requires a [list] of domains.")
 
-        if domains:
-            for index, domain in enumerate(domains):
-                payload.update({"domain%d" % index: domain})
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="search",
+            **{"domain%d" % num: domain for num, domain in enumerate(domains)})
 
         if "error" in response:
             return self._error_response(response)
@@ -103,15 +85,8 @@ class Dynadot(object):
 
     def register(self, domain, duration):
         """Register a domain."""
-        payload = self.payload.copy()
-        payload.update({
-            "command": "register",
-            "domain": domain,
-            "duration": duration
-        })
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="register", domain=domain,
+            duration=duration)
 
         if "error" in response:
             return self._error_response(response)
@@ -120,15 +95,8 @@ class Dynadot(object):
 
     def renew(self, domain, duration):
         """Renew a domain."""
-        payload = self.payload.copy()
-        payload.update({
-            "command": "renew",
-            "domain": domain,
-            "duration": duration
-        })
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="renew", domain=domain,
+            duration=duration)
 
         if "error" in response:
             return self._error_response(response)
@@ -141,20 +109,27 @@ class Dynadot(object):
             raise Exception("Invalid renewal option. Options are: [%s]" % (
                 ", ".join(self.RENEW_OPTIONS)))
 
-        payload = self.payload.copy()
-        payload.update({
-            "command": "set_renew_option",
-            "domain": domain,
-            "option": option
-        })
-
-        req = requests.get(self.API_URL, params=payload)
-        response = self._check_response_status(req.text)
+        response = self._send_command(command="set_renew_option",
+            domain=domain, option=option)
 
         if "error" in response:
             return self._error_response(response)
 
         return self._parse_set_renew_option_results(response[0].split(","))
+
+    def _check_response_status(self, response):
+        """Check response for errors."""
+        response_list = response.split("\n")
+        status = response_list[0].split(",")
+
+        if "error" in status:
+            return status
+
+        return response_list[2:-1]
+
+    def _error_response(self, response):
+        """Return error responses."""
+        return {response[0]: response[1]}
 
     def _parse_delete_results(self, result):
         """Parse delete result."""
@@ -202,16 +177,10 @@ class Dynadot(object):
             "more_info": result[1]
         }
 
-    def _check_response_status(self, response):
-        """Check response for errors."""
-        response_list = response.split("\n")
-        status = response_list[0].split(",")
+    def _send_command(self, **kwargs):
+        """OH SNAP"""
+        payload = self.payload.copy()
+        payload.update(**kwargs)
 
-        if "error" in status:
-            return status
-
-        return response_list[2:-1]
-
-    def _error_response(self, response):
-        """Return error responses."""
-        return {response[0]: response[1]}
+        req = requests.get(self.API_URL, params=payload)
+        return self._check_response_status(req.text)
