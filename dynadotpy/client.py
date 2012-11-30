@@ -1,13 +1,18 @@
 import requests
 
 
-SEARCH_RESPONSES = {
-    "yes": "The domain is available.",
-    "no": "The domain is not available.",
-    "offline": "The central registry for this domain is currently offline.",
-    "system_busy": "All connections are busy.",
-    "over_quota": "Over quota.",
-    "error": "There was a syntax or registry error processing this domain."
+DELETE_RESPONSES = {
+    "success": "The domain was successfully deleted",
+    "grace_expired": "The grace period has already expired",
+    "too_soon": "Cannot delete a domain the first hour after registration",
+    "offline": "The central registry for this domain is currently offline",
+    "error": "There was a syntax or registry error processing this request"
+}
+
+GET_NAMESERVERS_RESPONSES = {
+    "success": "The nameservers were successfully return",
+    "offline": "The central registry for this domain is currently offline",
+    "error": "There was a syntax or registry error processing this request"
 }
 
 REGISTER_RESPONSES = {
@@ -21,14 +26,6 @@ REGISTER_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
-DELETE_RESPONSES = {
-    "success": "The domain was successfully deleted",
-    "grace_expired": "The grace period has already expired",
-    "too_soon": "Cannot delete a domain the first hour after registration",
-    "offline": "The central registry for this domain is currently offline",
-    "error": "There was a syntax or registry error processing this request"
-}
-
 RENEW_RESPONSES = {
     "success": "The domain was successfully renewed",
     "insufficient_funds": "Not enough account balance to process this renewal",
@@ -36,21 +33,24 @@ RENEW_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
-GET_NAMESERVERS_RESPONSES = {
-    "success": "The nameservers were successfully return",
-    "offline": "The central registry for this domain is currently offline",
-    "error": "There was a syntax or registry error processing this request"
+SEARCH_RESPONSES = {
+    "yes": "The domain is available.",
+    "no": "The domain is not available.",
+    "offline": "The central registry for this domain is currently offline.",
+    "system_busy": "All connections are busy.",
+    "over_quota": "Over quota.",
+    "error": "There was a syntax or registry error processing this domain."
+}
+
+SET_FOLDER_RESPONSES = {
+    "success": "The folder were successfully set",
+    "error": "There was a syntax error processing this request"
 }
 
 SET_NAMESERVERS_RESPONSES = {
     "success": "The nameservers were successfully set",
     "offline": "The central registry for this domain is currently offline",
     "error": "There was a syntax or registry error processing this request"
-}
-
-SET_FOLDER_RESPONSES = {
-    "success": "The folder were successfully set",
-    "error": "There was a syntax error processing this request"
 }
 
 
