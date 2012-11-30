@@ -42,6 +42,12 @@ GET_NAMESERVERS_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
+SET_NAMESERVERS_RESPONSES = {
+    "success": "The nameservers were successfully set",
+    "offline": "The central registry for this domain is currently offline",
+    "error": "There was a syntax or registry error processing this request"
+}
+
 
 class Dynadot(object):
     API_URL = "https://api.dynadot.com/api2.html"
@@ -102,6 +108,23 @@ class Dynadot(object):
             return self._error_response(response)
 
         return self._parse_register_renew_results(response[0].split(","))
+
+    def set_nameservers(self, domain, nameservers):
+        """Set nameservers for the given domain."""
+        if not isinstance(nameservers, list):
+            raise TypeError("nameservers arg must be a [list].")
+
+        if len(nameservers) > 13:
+            raise Exception("Too many name servers. Dynadot only allows up to "
+                "13 name servers.")
+
+        response = self._send_command(command="set_ns", domain=domain,
+            **{"ns%d" % num: ns for num, ns in enumerate(nameservers)})
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_set_nameservers_results(response[0].split(","))
 
     def set_renew_option(self, domain, option):
         """Set domain renewal options."""
@@ -169,6 +192,13 @@ class Dynadot(object):
                     "info": result[4]
                 })
         return search_results
+
+    def _parse_set_nameservers_results(self, result):
+        """Parse set name servers result."""
+        return {
+            "result": result[0],
+            "more_info": result[1]
+        }
 
     def _parse_set_renew_option_results(self, result):
         """Parse set renew option result."""
