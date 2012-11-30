@@ -36,10 +36,17 @@ RENEW_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
+GET_NAMESERVERS_RESPONSES = {
+    "success": "The nameservers were successfully return",
+    "offline": "The central registry for this domain is currently offline",
+    "error": "There was a syntax or registry error processing this request"
+}
+
 
 class Dynadot(object):
     API_URL = "https://api.dynadot.com/api2.html"
     API_KEY = None
+    RENEW_OPTIONS = ("reset", "donot", "auto")
 
     def __init__(self, api_key, *args, **kwargs):
         self.API_KEY = api_key
@@ -62,6 +69,24 @@ class Dynadot(object):
             return self._error_response(response)
 
         return self._parse_delete_results(response[0].split(","))
+
+    def get_nameservers(self, domain):
+        """
+        Get Nameservers for domain.
+        """
+        payload = self.payload.copy()
+        payload.update({
+            "command": "get_ns",
+            "domain": domain
+        })
+
+        req = requests.get(self.API_URL, params=payload)
+        response = self._check_response_status(req.text)
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_get_nameservers_results(response[0].split(","))
 
     def search(self, domains):
         """
@@ -120,6 +145,29 @@ class Dynadot(object):
 
         return self._parse_register_renew_results(response[0].split(","))
 
+    def set_renew_option(self, domain, option):
+        """
+        Set domain renewal options.
+        """
+        if option not in self.RENEW_OPTIONS:
+            raise Exception("Invalid renewal option. Options are: [%s]" % (
+                ", ".join(self.RENEW_OPTIONS)))
+
+        payload = self.payload.copy()
+        payload.update({
+            "command": "set_renew_option",
+            "domain": domain,
+            "option": option
+        })
+
+        req = requests.get(self.API_URL, params=payload)
+        response = self._check_response_status(req.text)
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_set_renew_option_results(response[0].split(","))
+
     def _parse_delete_results(self, result):
         """
         Parse delete result.
@@ -128,6 +176,16 @@ class Dynadot(object):
             "result": result[0],
             "more_info": result[1]
         }
+
+    def _parse_get_nameservers_results(self, result):
+        """
+        Parse nameserver result.
+        """
+        response = {"result": result[0], "more_info": result[14]}
+        for n in xrange(0, 13):
+            response.update({"ns%d" % n: result[n + 1]})
+
+        return response
 
     def _parse_register_renew_results(self, result):
         """
@@ -156,6 +214,15 @@ class Dynadot(object):
                     "info": result[4]
                 })
         return loggins
+
+    def _parse_set_renew_option_results(self, result):
+        """
+        Parse set renew option result.
+        """
+        return {
+            "result": result[0],
+            "more_info": result[1]
+        }
 
     def _check_response_status(self, response):
         """
