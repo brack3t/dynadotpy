@@ -48,6 +48,11 @@ SET_NAMESERVERS_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
+SET_FOLDER_RESPONSES = {
+    "success": "The folder were successfully set",
+    "error": "There was a syntax error processing this request"
+}
+
 
 class Dynadot(object):
     API_URL = "https://api.dynadot.com/api2.html"
@@ -108,6 +113,22 @@ class Dynadot(object):
             return self._error_response(response)
 
         return self._parse_register_renew_results(response[0].split(","))
+
+    def set_folder(self, domain, folder):
+        """
+        Put specified domain in a named folder. You must create the
+        folder on Dynadot's website before using this command.
+
+        Note: folder names are case sensitive. Folder1 and folder1 are
+        two different folder names.
+        """
+        response = self._send_command(command="set_folder", domain=domain,
+            folder=folder)
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_set_folder_results(response[0].split(","))
 
     def set_nameservers(self, domain, nameservers):
         """Set nameservers for the given domain."""
@@ -192,6 +213,13 @@ class Dynadot(object):
                     "info": result[4]
                 })
         return search_results
+
+    def _parse_set_folder_results(self, result):
+        """Parse set folder result."""
+        return {
+            "result": result[0],
+            "more_info": result[1]
+        }
 
     def _parse_set_nameservers_results(self, result):
         """Parse set name servers result."""
