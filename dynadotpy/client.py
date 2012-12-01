@@ -55,6 +55,7 @@ SET_NAMESERVERS_RESPONSES = {
 
 
 class Dynadot(object):
+    """A simple Python wrapper for the Dynadot.com API v2."""
     API_URL = "https://api.dynadot.com/api2.html"
     API_KEY = None
     RENEW_OPTIONS = ("reset", "donot", "auto")
@@ -64,7 +65,17 @@ class Dynadot(object):
         self.payload = {"key": self.API_KEY}
 
     def delete(self, domain):
-        """Delete a domain."""
+        """Delete a domain.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.delete(domain="example.com")
+            {"result": u"success", "more_info": u""}
+
+        :param domain: String of the domain.
+        :return: `dict` of the response from Dynadot's API.
+        """
         response = self._send_command(command="delete", domain=domain)
 
         if "error" in response:
