@@ -90,7 +90,10 @@ class Dynadot(object):
             >>> from dynadotpy.client import Dynadot
             >>> dyn = Dynadot(api_key="<key>")
             >>> result = dyn.get_nameservers(domain="example.com")
-            {"result": u"success", "more_info": u""}
+            {"result": u"success", "ns0": u"ns1.example.com"...
+
+        :param: String of the domain.
+        :return: `dict` of the response from Dynadot's API.
         """
         response = self._send_command(command="get_ns", domain=domain)
 
@@ -100,7 +103,18 @@ class Dynadot(object):
         return self._parse_get_nameservers_results(response[0].split(","))
 
     def register(self, domain, duration):
-        """Register a domain."""
+        """Register a domain.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.register(domain="example.com", duration=1)
+            {"result": u"success", "expiration_date": "1180897681932"...
+
+        :param: String of the domain you want to register.
+        :param: String/int of the duration in years you wish to register.
+        :return: `dict` of the response from Dynadot's API.
+        """
         response = self._send_command(command="register", domain=domain,
             duration=duration)
 
@@ -110,7 +124,18 @@ class Dynadot(object):
         return self._parse_register_renew_results(response[0].split(","))
 
     def renew(self, domain, duration):
-        """Renew a domain."""
+        """Renew a domain.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.renew(domain="example.com", duration=1)
+            {"result": u"success", "expiration_date": "1180897681932"...
+
+        :param: String of the domain you want to register.
+        :param: String/int of the duration in years you wish to register.
+        :return: `dict` of the response from Dynadot's API.
+        """
         response = self._send_command(command="renew", domain=domain,
             duration=duration)
 
@@ -120,9 +145,25 @@ class Dynadot(object):
         return self._parse_register_renew_results(response[0].split(","))
 
     def search(self, domains):
-        """Search for available domains."""
+        """Search for available domains.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.search(domains=["example.com",
+                "example2.com"])
+            [{'info': u'', 'domain': u'example.com', 'language': u'',
+                'domain_param': u'domain0', 'result': u'no'}...]
+
+        :param: `list` of domains you want to search for.
+        :return: `list` of `dicts` for each domain searched.
+        """
         if not isinstance(domains, list):
             raise TypeError("Search requires a [list] of domains.")
+
+        if len(domains) > 100:
+            raise Exception("Too many domain names. Dynadot only allows up to"
+                "100 domains.")
 
         response = self._send_command(command="search",
             **{"domain%d" % num: domain for num, domain in enumerate(domains)})
@@ -139,6 +180,17 @@ class Dynadot(object):
 
         Note: folder names are case sensitive. Folder1 and folder1 are
         two different folder names.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.set_folder(domain="example.com",
+                folder="folder1")
+            {'result': 'success', 'more_info': ''}
+
+        :param: String of the domain you want to move.
+        :param: String of the folder you want to move the domain to.
+        :return: `dict` of the response from Dynadot's API.
         """
         response = self._send_command(command="set_folder", domain=domain,
             folder=folder)
@@ -149,7 +201,19 @@ class Dynadot(object):
         return self._parse_set_folder_results(response[0].split(","))
 
     def set_nameservers(self, domain, nameservers):
-        """Set nameservers for the given domain."""
+        """Set nameservers for the given domain.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.set_nameservers(domain="example.com",
+                nameservers=["ns1.example.com", "ns2.example.com"])
+            {'result': 'success', 'more_info': ''}
+
+        :param: String of the domain.
+        :param: `list` of name servers you wish to set.
+        :return: `dict` of the response from Dynadot's API.
+        """
         if not isinstance(nameservers, list):
             raise TypeError("nameservers arg must be a [list].")
 
@@ -166,7 +230,23 @@ class Dynadot(object):
         return self._parse_set_nameservers_results(response[0].split(","))
 
     def set_renew_option(self, domain, option):
-        """Set domain renewal options."""
+        """Set domain renewal options.
+        Valid options are:
+            'reset': reset the domain's renew option to "no renew option"
+            'donot': set the domain's renew option to "do not renew"
+            'auto': set the domain's renew option to "auto-renew"
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.set_renew_option(domain="example.com",
+                option="auto")
+            {'result': 'success', 'more_info': ''}
+
+        :param: String of the domain.
+        :param: String of the option you wish to set for the domain.
+        :return: `dict` of the response from Dynadot's API.
+        """
         if option not in self.RENEW_OPTIONS:
             raise Exception("Invalid renewal option. Options are: [%s]" % (
                 ", ".join(self.RENEW_OPTIONS)))
@@ -257,7 +337,10 @@ class Dynadot(object):
         }
 
     def _send_command(self, **kwargs):
-        """OH SNAP"""
+        """
+        Uses kwargs passed in to build a request to the Dynadot API.
+        :returns: Response text
+        """
         payload = self.payload.copy()
         payload.update(**kwargs)
 
