@@ -84,7 +84,14 @@ class Dynadot(object):
         return self._parse_delete_results(response[0].split(","))
 
     def get_nameservers(self, domain):
-        """Get Nameservers for domain."""
+        """Get Nameservers for the given domain.
+
+        ::
+            >>> from dynadotpy.client import Dynadot
+            >>> dyn = Dynadot(api_key="<key>")
+            >>> result = dyn.get_nameservers(domain="example.com")
+            {"result": u"success", "more_info": u""}
+        """
         response = self._send_command(command="get_ns", domain=domain)
 
         if "error" in response:
@@ -195,6 +202,9 @@ class Dynadot(object):
 
     def _parse_get_nameservers_results(self, result):
         """Parse nameserver result."""
+        if result[0] != "success":
+            return {"result": result[0], "more_info": result[1]}
+
         response = {"result": result[0], "more_info": result[14]}
         for n in xrange(0, 13):
             response.update({"ns%d" % n: result[n + 1]})
