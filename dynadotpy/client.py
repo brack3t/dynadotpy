@@ -81,19 +81,6 @@ class Dynadot(object):
 
         return self._parse_get_nameservers_results(response[0].split(","))
 
-    def search(self, domains):
-        """Search for available domains."""
-        if not isinstance(domains, list):
-            raise TypeError("Search requires a [list] of domains.")
-
-        response = self._send_command(command="search",
-            **{"domain%d" % num: domain for num, domain in enumerate(domains)})
-
-        if "error" in response:
-            return self._error_response(response)
-
-        return self._parse_search_results(results=response)
-
     def register(self, domain, duration):
         """Register a domain."""
         response = self._send_command(command="register", domain=domain,
@@ -113,6 +100,19 @@ class Dynadot(object):
             return self._error_response(response)
 
         return self._parse_register_renew_results(response[0].split(","))
+
+    def search(self, domains):
+        """Search for available domains."""
+        if not isinstance(domains, list):
+            raise TypeError("Search requires a [list] of domains.")
+
+        response = self._send_command(command="search",
+            **{"domain%d" % num: domain for num, domain in enumerate(domains)})
+
+        if "error" in response:
+            return self._error_response(response)
+
+        return self._parse_search_results(results=response)
 
     def set_folder(self, domain, folder):
         """
