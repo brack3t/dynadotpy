@@ -15,7 +15,7 @@ setup(
     install_requires=["requests"],
     include_package_data=True,
     classifiers=[
-        "Programming Language :: Python :: 2 :: Only"
+        "Programming Language :: Python :: 2 :: Only",
         "License :: OSI Approved :: BSD License",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Environment :: Web Environment",
