@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to dynadotpy’s documentation! &mdash; dynadotpy 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dynadotpy 0.1.0 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">dynadotpy 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-dynadotpy-s-documentation">
+<h1>Welcome to dynadotpy&#8217;s documentation!<a class="headerlink" href="#welcome-to-dynadotpy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>You can view the code of our project or fork it on <a class="reference external" href="https://github.com/brack3t/dynadotpy">Github</a>. Dynadotpy implements all current features of the version 2 <a class="reference external" href="https://www.dynadot.com/domain/api2.html">API</a>.</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Install from PyPI</p>
+<div class="highlight-python"><pre>pip install dynadotpy</pre>
+</div>
+</div>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Dynadot&#8217;s API returns all responses in plain text. Basically the CSV format. This wrapper will
+give you pretty Python objects instead. If there is interest in the project I may add JSON
+responses as well.</p>
+</div>
+<div class="section" id="command-failure">
+<h1>Command Failure<a class="headerlink" href="#command-failure" title="Permalink to this headline">¶</a></h1>
+<p>If there is an error with the API, you should always get back a dict with a single key and value.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;error&#39;</span><span class="p">:</span> <span class="s">&#39;More information about the result. Only used when result is error.&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="search-command">
+<h1>Search Command<a class="headerlink" href="#search-command" title="Permalink to this headline">¶</a></h1>
+<p>The search command allows you to search for available domain names through Dynadot. You are
+limited to 100 domain names per call.</p>
+<p>Search command args:</p>
+<ul class="simple">
+<li>domains - Python list of domains you want to search for.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">Dynadot</span>
+
+<span class="n">dyn</span> <span class="o">=</span> <span class="n">Dynadot</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s">&quot;&lt;api_key&gt;&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">dyn</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">domains</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;example.com&quot;</span><span class="p">,</span> <span class="s">&quot;example2.com&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>A successful response will return a list of dicts. Each dict within the list will contain:</p>
+<ul class="simple">
+<li><cite>domain_param</cite> - The domain parameter. For example: domain0</li>
+<li><cite>domain</cite> - The domain name searched for.</li>
+<li><cite>language</cite> - The language if any. For example: spa</li>
+<li><cite>result</cite> - The result of the search.</li>
+<li><cite>more_info</cite> - More information about the result. Only used when result is &#8216;error&#8217;.</li>
+</ul>
+<p>Search command possible results:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">SEARCH_RESPONSES</span>
+
+<span class="n">SEARCH_RESPONSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;yes&quot;</span><span class="p">:</span> <span class="s">&quot;The domain is available.&quot;</span><span class="p">,</span>
+    <span class="s">&quot;no&quot;</span><span class="p">:</span> <span class="s">&quot;The domain is not available.&quot;</span><span class="p">,</span>
+    <span class="s">&quot;offline&quot;</span><span class="p">:</span> <span class="s">&quot;The central registry for this domain is currently offline.&quot;</span><span class="p">,</span>
+    <span class="s">&quot;system_busy&quot;</span><span class="p">:</span> <span class="s">&quot;All connections are busy.&quot;</span><span class="p">,</span>
+    <span class="s">&quot;over_quota&quot;</span><span class="p">:</span> <span class="s">&quot;Over quota.&quot;</span><span class="p">,</span>
+    <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="s">&quot;There was a syntax or registry error processing this domain.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="register-command">
+<h1>Register Command<a class="headerlink" href="#register-command" title="Permalink to this headline">¶</a></h1>
+<p>Calling the register command will create and process a registration order. You must have
+enough account balance to pay for the order. You can only register a single domain at a time.</p>
+<p>Register command args:</p>
+<ul class="simple">
+<li>domain - String of the domain you want to register.</li>
+<li>duration - String/Int of the duration in years you wish to register the domain.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">Dynadot</span>
+
+<span class="n">dyn</span> <span class="o">=</span> <span class="n">Dynadot</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s">&quot;&lt;api_key&gt;&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">dyn</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="s">&quot;example.com&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Response dict will contain:</p>
+<ul class="simple">
+<li><cite>domain</cite> - The domain name you want to register; only one domain can be registered per request.</li>
+<li><cite>language</cite> - The language tag for the requested domain; only needed if the domain is an IDN.</li>
+<li><cite>expiration_date</cite> - Expiration date in unix time (milliseconds since midnight UTC of January 1, 1970). Only used when result is &#8216;success&#8217;.</li>
+</ul>
+<p>Register command possible results</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadot.client</span> <span class="kn">import</span> <span class="n">REGISTER_RESPONSES</span>
+
+<span class="n">REGISTER_RESPONSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="s">&quot;The domain was successfully registered&quot;</span><span class="p">,</span>
+    <span class="s">&quot;not_available&quot;</span><span class="p">:</span> <span class="s">&quot;The domain is not available&quot;</span><span class="p">,</span>
+    <span class="s">&quot;insufficient_funds&quot;</span><span class="p">:</span> <span class="s">&quot;Not enough account balance to process this registration&quot;</span><span class="p">,</span>
+    <span class="s">&quot;offline&quot;</span><span class="p">:</span> <span class="s">&quot;The central registry for this domain is currently offline&quot;</span><span class="p">,</span>
+    <span class="s">&quot;system_busy&quot;</span><span class="p">:</span> <span class="s">&quot;All connections are busy&quot;</span><span class="p">,</span>
+    <span class="s">&quot;over_quota&quot;</span><span class="p">:</span> <span class="s">&quot;See quota details below&quot;</span><span class="p">,</span>
+    <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="s">&quot;There was a syntax or registry error processing this request&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="delete-command">
+<h1>Delete Command<a class="headerlink" href="#delete-command" title="Permalink to this headline">¶</a></h1>
+<p>Calling the delete command will delete a domain that is still in the grace period. Your
+account balance will be credited back the registration fee. Domains with privacy, that
+have been renewed, or that have been moved to a new account cannot be deleted through the API.</p>
+<p>Delete command args:</p>
+<ul class="simple">
+<li>domain - String of the domain you wish to delete.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">Dynadot</span>
+
+<span class="n">dyn</span> <span class="o">=</span> <span class="n">Dynadot</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s">&quot;&lt;api_key&gt;&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">dyn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="s">&quot;example.com&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Response dict will contain:</p>
+<ul class="simple">
+<li><cite>result</cite> - The result of the delete request.</li>
+<li><cite>more_info</cite> - More information about the result. Only used when result is &#8216;error&#8217;.</li>
+</ul>
+<p>Delete command possible results:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">DELETE_RESPONSES</span>
+
+<span class="n">DELETE_RESPONSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="s">&quot;The domain was successfully deleted&quot;</span><span class="p">,</span>
+    <span class="s">&quot;grace_expired&quot;</span><span class="p">:</span> <span class="s">&quot;The grace period has already expired&quot;</span><span class="p">,</span>
+    <span class="s">&quot;too_soon&quot;</span><span class="p">:</span> <span class="s">&quot;Cannot delete a domain the first hour after registration&quot;</span><span class="p">,</span>
+    <span class="s">&quot;offline&quot;</span><span class="p">:</span> <span class="s">&quot;The central registry for this domain is currently offline&quot;</span><span class="p">,</span>
+    <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="s">&quot;There was a syntax or registry error processing this request&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="renew-command">
+<h1>Renew Command<a class="headerlink" href="#renew-command" title="Permalink to this headline">¶</a></h1>
+<p>Calling the renew command will create and process a renewal order. If the domain has privacy,
+the renew command will also renew the privacy. You must have enough account balance to pay
+for the order.</p>
+<p>Renew command args:</p>
+<ul class="simple">
+<li>domain - String of the domain you want to renew.</li>
+<li>duration - String/int of the duration in years you wish to renew for.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">Dynadot</span>
+
+<span class="n">dyn</span> <span class="o">=</span> <span class="n">Dynadot</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s">&quot;&lt;api_key&gt;&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">dyn</span><span class="o">.</span><span class="n">renew</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="s">&quot;example.com&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Response dict will contain:</p>
+<ul class="simple">
+<li><cite>result</cite> - The result of the renew request.</li>
+<li><cite>more_info</cite> - More information about the result. Only used when result is &#8216;error&#8217;.</li>
+<li><cite>expiration_date</cite> - Expiration date in unix time (milliseconds since midnight UTC of January 1, 1970). Only used when result is &#8216;success&#8217;.</li>
+</ul>
+<p>Renew command possible results:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">RENEW_RESPONSES</span>
+
+<span class="n">RENEW_RESPONSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="s">&quot;The domain was successfully renewed&quot;</span><span class="p">,</span>
+    <span class="s">&quot;insufficient_funds&quot;</span><span class="p">:</span> <span class="s">&quot;Not enough account balance to process this renewal&quot;</span><span class="p">,</span>
+    <span class="s">&quot;offline&quot;</span><span class="p">:</span> <span class="s">&quot;The central registry for this domain is currently offline&quot;</span><span class="p">,</span>
+    <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="s">&quot;There was a syntax or registry error processing this request&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-nameservers-command">
+<h1>Get Nameservers Command<a class="headerlink" href="#get-nameservers-command" title="Permalink to this headline">¶</a></h1>
+<p>Get the name servers for the specified domain.</p>
+<p>Get name servers command args:</p>
+<ul class="simple">
+<li>domain - String of the domain.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">Dynadot</span>
+
+<span class="n">dyn</span> <span class="o">=</span> <span class="n">Dynadot</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s">&quot;&lt;api_key&gt;&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">dyn</span><span class="o">.</span><span class="n">get_nameservers</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="s">&quot;example.com&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Response dict will contain:</p>
+<ul class="simple">
+<li><cite>result</cite> - The result of the get nameservers request.</li>
+<li><cite>ns[0-12]</cite> - ns0-ns12 name servers. All 13 will always be returned. Any of them not set are simply blank strings.</li>
+<li><cite>more_info</cite> - More information about the result. Only used when result is &#8216;error&#8217;.</li>
+</ul>
+<p>get name servers command possible results:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dynadotpy.client</span> <span class="kn">import</span> <span class="n">GET_NAMESERVERS_RESPONSES</span>
+
+<span class="n">GET_NAMESERVERS_RESPONSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="s">&quot;The nameservers were successfully return&quot;</span><span class="p">,</span>
+    <span class="s">&quot;offline&quot;</span><span class="p">:</span> <span class="s">&quot;The central registry for this domain is currently offline&quot;</span><span class="p">,</span>
+    <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="s">&quot;There was a syntax or registry error processing this request&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to dynadotpy&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#command-failure">Command Failure</a></li>
+<li><a class="reference internal" href="#search-command">Search Command</a></li>
+<li><a class="reference internal" href="#register-command">Register Command</a></li>
+<li><a class="reference internal" href="#delete-command">Delete Command</a></li>
+<li><a class="reference internal" href="#renew-command">Renew Command</a></li>
+<li><a class="reference internal" href="#get-nameservers-command">Get Nameservers Command</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">dynadotpy 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Chris Jones and Kenneth Love (brack3t).
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
