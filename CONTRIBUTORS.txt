@@ -1,0 +1,11 @@
+============
+Contributors
+============
+
+dynadotpy Project Lead
+======================
+
+* Chris Jones <chris@brack3t.com>
+
+Contributors
+============
