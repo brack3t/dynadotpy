@@ -53,6 +53,11 @@ SET_NAMESERVERS_RESPONSES = {
     "error": "There was a syntax or registry error processing this request"
 }
 
+SET_RENEW_RESPONSES = {
+    "success": "The renew options were successfully set.",
+    "error": "There was a syntax error processing this request."
+}
+
 
 class Dynadot(object):
     """A simple Python wrapper for the Dynadot.com API v2."""

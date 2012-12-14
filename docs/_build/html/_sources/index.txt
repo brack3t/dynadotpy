@@ -213,11 +213,11 @@ Get name servers command args:
 
 Response dict will contain:
 
-* `result` - The result of the get nameservers request.
+* `result` - The result of the get name servers request.
 * `ns[0-12]` - ns0-ns12 name servers. All 13 will always be returned. Any of them not set are simply blank strings.
 * `more_info` - More information about the result. Only used when result is 'error'.
 
-get name servers command possible results:
+Get name servers command possible results:
 
 ::
 
@@ -227,6 +227,80 @@ get name servers command possible results:
         "success": "The nameservers were successfully return",
         "offline": "The central registry for this domain is currently offline",
         "error": "There was a syntax or registry error processing this request"
+    }
+
+
+Set Renew Option Command
+========================
+
+Set the renewal options for a specific domain.
+
+Set renew options command args:
+
+* domain - String of the domain name to update; only one domain can be set per request.
+* option - String of the available renewal options. These are the only options allowed.
+    * `reset` - reset the domain's renew option to "no renew option"
+    * `donot` - set the domain's renew option to "do not renew"
+    * `auto` - set the domain's renew option to "auto-renew"
+
+::
+
+    from dynadotpy.client import Dynadot
+
+    dyn = Dynadot(api_key="<api_key>")
+    result = dyn.set_renew_option(domain="example.com", option="donot")
+
+Response dict will contain:
+
+* `result` - The result of the set renew options request.
+* `more_info` - More information about the result. Only used when result is 'error'.
+
+Set renew options command possible results:
+
+::
+
+    from dynadotpy.client import SET_RENEW_RESPONSES
+
+    SET_RENEW_RESPONSES = {
+        "success": "The renew options were successfully set.",
+        "error": "There was a syntax error processing this request."
+    }
+
+
+Set Folder Command
+========================
+
+Move the specified domain into a folder.
+
+.. warning:: The folder you specify must already be created by using the Dynadot control panel.
+.. warning:: Folder names **are** case sensitive. Test != test.
+
+Set folder command args:
+
+* domain - String of the domain name to update; only one domain can be set per request.
+* folder - String of the folder name that you want to move your domain in.
+
+::
+
+    from dynadotpy.client import Dynadot
+
+    dyn = Dynadot(api_key="<api_key>")
+    result = dyn.set_folder(domain="example.com", folder="test")
+
+Response dict will contain:
+
+* `result` - The result of the set renew options request.
+* `more_info` - More information about the result. Only used when result is 'error'.
+
+Set folder command possible results:
+
+::
+
+    from dynadotpy.client import SET_FOLDER_RESPONSES
+
+    SET_FOLDER_RESPONSES = {
+        "success": "The folder were successfully set",
+        "error": "There was a syntax error processing this request"
     }
 
 
